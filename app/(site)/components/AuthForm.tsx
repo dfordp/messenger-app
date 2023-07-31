@@ -38,7 +38,7 @@ export const AuthForm = () => {
   } = useForm<FieldValues>({
     defaultValues : {
       name : '',
-      email :'' ,
+      email : '' ,
       password : ''
     }
   })
@@ -49,21 +49,7 @@ export const AuthForm = () => {
 
     if ( variant === 'REGISTER'){
       axios.post('/api/register', data)
-      .then(() => signIn('credentials', {
-        ...data,
-        redirect: false,
-      }))
-      .then((callback) => {
-        if (callback?.error) {
-          toast.error('Invalid credentials!');
-        }
 
-        if (callback?.ok) {
-          router.push('/conversations')
-        }
-      })
-      .catch(() => toast.error('Something went wrong!'))
-      .finally(() => setIsLoading(false))
     }
 
     if ( variant === 'LOGIN'){
@@ -101,7 +87,7 @@ export const AuthForm = () => {
       >
       <form
       className="space-y-6"
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       >
         {variant === 'REGISTER' && (
             <Input
