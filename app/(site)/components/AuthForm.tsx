@@ -8,6 +8,9 @@ import Input from "@/app/components/inputs/Input"
 
 import { useCallback, useState } from "react"
 import { useForm , FieldValues , SubmitHandler } from "react-hook-form"
+import { toast } from 'react-hot-toast';
+
+import axios from 'axios';
 
 export const AuthForm = () => {
 
@@ -40,11 +43,27 @@ export const AuthForm = () => {
     }
   })
 
-  const onSubmit : SubmitHandler<FieldValues> = (data) =>{
+  const onSubmit : SubmitHandler<FieldValues> = (data) => {
+
     setIsLoading(true);
 
     if ( variant === 'REGISTER'){
-      //Axios Register
+      axios.post('/api/register', data)
+      .then(() => signIn('credentials', {
+        ...data,
+        redirect: false,
+      }))
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error('Invalid credentials!');
+        }
+
+        if (callback?.ok) {
+          router.push('/conversations')
+        }
+      })
+      .catch(() => toast.error('Something went wrong!'))
+      .finally(() => setIsLoading(false))
     }
 
     if ( variant === 'LOGIN'){
