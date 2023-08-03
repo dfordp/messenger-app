@@ -7,7 +7,7 @@ async function Sidebar({ children }: {
     return(
     <div className="h-full">
         <DesktopSidebar/>
-        {/* <MobileFooter /> */}
+        <MobileFooter />
         <main className="lg:pl-20 h-full">
             {children}
         </main>
