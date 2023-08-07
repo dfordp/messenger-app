@@ -1,51 +1,56 @@
-'use client'
-
+'use client';
 
 import { 
-    HiPaperAirplane, 
-    HiPhoto
+  HiPaperAirplane, 
+  HiPhoto
 } from "react-icons/hi2";
 import MessageInput from "./MessageInput";
-
 import { 
-    FieldValues, 
-    SubmitHandler, 
-    useForm 
+  FieldValues, 
+  SubmitHandler, 
+  useForm 
 } from "react-hook-form";
-import useConversation from "@/app/hooks/useConversation";
 import axios from "axios";
 import { CldUploadButton } from "next-cloudinary";
+import useConversation from "@/app/hooks/useConversation";
 
 const Form = () => {
+  const { conversationId } = useConversation();
 
-    const {conversationId} = useConversation();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: {
+      errors,
+    }
+  } = useForm<FieldValues>({
+    defaultValues: {
+      message: ''
+    }
+  });
 
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: {
-            errors,
-        }
-    } = useForm<FieldValues>({
-        defaultValues:{
-            message:''
-        }
+  const onSubmit: SubmitHandler<FieldValues> = (data) => {
+    setValue('message', '', { shouldValidate: true });
+    axios.post('/api/messages', {
+      ...data,
+      conversationId: conversationId
     })
+  }
 
-    const onSubmit: SubmitHandler<FieldValues> = (data) => {
-        setValue('message', '', { shouldValidate: true });
-        axios.post('/api/messages', {
-          ...data,
-          conversationId: conversationId
-        })
-      }
-    
-  return (
-    <div
-    className="
+  const handleUpload = (result: any) => {
+    axios.post('/api/messages', {
+      image: result.info.secure_url,
+      conversationId: conversationId
+    })
+  }
+
+  return ( 
+    <div 
+      className="
         py-4 
-        px-4 
+        px-4
+        lg:px-5
         bg-white 
         border-t 
         flex 
@@ -53,13 +58,11 @@ const Form = () => {
         gap-2 
         lg:gap-4 
         w-full
-        
       "
     >
-      
       <CldUploadButton 
         options={{ maxFiles: 1 }} 
-        onUpload={()=>{}} 
+        onUpload={handleUpload} 
         uploadPreset="pgc9ehd5"
       >
         <HiPhoto size={30} className="text-sky-500" />
@@ -93,7 +96,7 @@ const Form = () => {
         </button>
       </form>
     </div>
-  )
+  );
 }
-
-export default Form
+ 
+export default Form;
