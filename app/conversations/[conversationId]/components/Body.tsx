@@ -18,6 +18,9 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
 
     const { conversationId } = useConversation();
 
+    useEffect(() => {
+        axios.post(`/api/conversations/${conversationId}/seen`);
+      }, [conversationId]);
 
     return(
         <div className="h-[585px] overflow-y-auto">
@@ -25,6 +28,7 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
             <MessageBox 
                 isLast={i === messages.length - 1} 
                 key={message.id} 
+                data={message}
                 />
         ))}
         <div className="pt-24" ref={bottomRef} />
