@@ -2,7 +2,7 @@
 
 import clsx from "clsx"
 import Image from "next/image"
-import {useState} from "react"
+// import {useState} from "react"
 import {format} from "date-fns"
 import { useSession } from "next-auth/react"
 import { FullMessageType } from "@/app/types"
@@ -71,6 +71,17 @@ const MessageBox : React.FC<MessageBoxProps> = ({
           </div>
         )}
       </div>
+       {isLast && isOwn && seenList.length>0 && (
+        <div
+        className="
+            text-xs 
+            font-light 
+            text-gray-500
+            "
+          >
+          {`Seen by ${seenList}`}
+        </div>
+       )}
       </div>
     </div>
   )
