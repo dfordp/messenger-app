@@ -7,7 +7,7 @@ import { Conversation, User } from '@prisma/client';
 import { format } from 'date-fns';
 
 import useOtherUser from '@/app/hooks/useOtherUser';
-// import useActiveList from '@/app/hooks/useActiveList';
+import useActiveList from '@/app/hooks/useActiveList';
 
 import Avatar from '@/app/components/Avatar';
 import AvatarGroup from '@/app/components/AvatarGroup';
@@ -28,6 +28,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const otherUser = useOtherUser(data);
+  const {members} = useActiveList();
+  const IsActive = members.indexOf(otherUser?.email!) !== -1
   
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), 'PP');
@@ -37,16 +39,14 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
     return data.name || otherUser.name;
   }, [data.name, otherUser.name]);
 
-  // const { members } = useActiveList();
-  // const isActive = members.indexOf(otherUser?.email!) !== -1;
 
   const statusText = useMemo(() => {
     if (data.isGroup) {
       return `${data.users.length} members`;
     }
 
-    return 'Active' 
-  }, [data]);
+    return IsActive ? 'Active' : 'Offline'
+  }, [data , IsActive]);
 
   return (
     <>

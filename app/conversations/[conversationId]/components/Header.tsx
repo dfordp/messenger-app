@@ -5,12 +5,13 @@ import { HiEllipsisHorizontal } from 'react-icons/hi2';
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Conversation, User } from "@prisma/client";
-
+import useActiveList from '@/app/hooks/useActiveList';
 import useOtherUser from "@/app/hooks/useOtherUser";
 
 import ProfileDrawer from './ProfileDrawer';
 import Avatar from "@/app/components/Avatar";
 import AvatarGroup from "@/app/components/AvatarGroup";
+import useActiveChannel from '@/app/hooks/useActiveChannel';
 
 interface HeaderProps {
     conversation : Conversation & {
@@ -24,6 +25,8 @@ const Header:React.FC<HeaderProps> = ({
 
     const otherUser = useOtherUser(conversation);
     const [drawerOpen,setDrawerOpen] = useState(false)
+    const { members } = useActiveList();
+    const isActive = members.indexOf(otherUser?.email!) !== -1;
 
     const statusText = useMemo (()=>{
         
@@ -31,9 +34,9 @@ const Header:React.FC<HeaderProps> = ({
             return `${conversation.users.length} members`
         }
 
-        return 'active'
+        return isActive ? 'Active' : 'Offline';
 
-    },[conversation])
+    },[conversation,isActive])
 
     return(
         <>
