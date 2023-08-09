@@ -1,6 +1,6 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import { NextResponse } from "next/server";
-
+import { pusherServer } from "@/app/libs/pusher";
 import prisma from "@/app/libs/prismadb";
 
 export async function POST(
@@ -88,6 +88,13 @@ export async function POST(
           users: true
         }
       });
+
+      newConversation.users.map((user) => {
+        if (user.email) {
+          pusherServer.trigger(user.email, 'conversation:new', newConversation);
+        }
+      });
+
       return NextResponse.json(newConversation)
   } catch (error) {
     return new NextResponse('Internal Error', { status: 500 });
