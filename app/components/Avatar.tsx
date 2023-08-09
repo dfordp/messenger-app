@@ -17,10 +17,10 @@ const Avatar: React.FC<AvatarProps> = ({ user }) => {
                 inline-block 
                 rounded-full 
                 overflow-hidden
-                h-9
-                w-9
-                md:h-12
-                md:w-12
+                h-10
+                w-10
+                md:h-13
+                md:w-13
             ">
                 <Image
                 fill

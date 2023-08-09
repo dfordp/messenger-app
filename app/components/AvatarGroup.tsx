@@ -28,8 +28,8 @@ const AvatarGroup: React.FC<AvatarGroupProps> = ({
             inline-block 
             rounded-full 
             overflow-hidden
-            h-[21px]
-            w-[21px]
+            h-[25px]
+            w-[25px]
             ${positionMap[index as keyof typeof positionMap]}
           `}>
             <Image
