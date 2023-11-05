@@ -7,6 +7,7 @@ import { FullMessageType } from "@/app/types";
 import MessageBox from "./MessageBox";
 import {find} from "lodash"
 import { pusherClient } from "@/app/libs/pusher";
+import { format , isToday } from 'date-fns';
 
 
 
@@ -21,6 +22,17 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
     const bottomRef = useRef<HTMLDivElement>(null);
 
     const { conversationId } = useConversation();
+
+
+    const messagesByDate = messages.reduce((groups: { [key: string]: FullMessageType[] }, message) => {
+      const date = format(new Date(message.createdAt), 'yyyy-MM-dd');
+      if (!groups[date]) {
+        groups[date] = [];
+      }
+      groups[date].push(message);
+      return groups;
+    }, {});
+    
 
     useEffect(() => {
         axios.post(`/api/conversations/${conversationId}/seen`);
@@ -68,22 +80,45 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
         }
       },[conversationId])
 
+
+      
+
       
       return(
         <div className="h-[585px] overflow-y-auto">
+          {(!messages.length) && 
           <div className="flex justify-center items-center">
+            <div className="mt-2 bg-gray-200 text-center rounded inline-block">
+              <p className="px-2 py-1 text-gray-500 text-xs">
+                Messages & Calls are end-to-end encrypted
+              </p>
+            </div>
+          </div>}
+          {Object.entries(messagesByDate).map(([date, messages]) => (
+          <div key={date}>
+            {isToday(new Date(date)) && 
+            <div className="flex justify-center items-center">
+                <div className="mt-2 bg-gray-200 text-center rounded inline-block">
+                    <p className="px-2 py-1 text-gray-500 text-xs">
+                        Messages & Calls are end-to-end encrypted
+                    </p>
+                </div>
+            </div>}
+            <div className="flex justify-center items-center">
               <div className="mt-2 bg-gray-200 text-center rounded inline-block">
                   <p className="px-2 py-1 text-gray-500 text-xs">
-                      These chats are end-to-end encrypted
+                      {date}
                   </p>
               </div>
-          </div>
+            </div>
             {messages.map((message, i) => (
-            <MessageBox 
-                isLast={i === messages.length - 1} 
-                key={message.id} 
+              <MessageBox
+                isLast={i === messages.length - 1}
+                key={message.id}
                 data={message}
-                />
+              />
+            ))}
+          </div>
         ))}
         <div className="pt-24" ref={bottomRef} />
         </div>
