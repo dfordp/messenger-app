@@ -69,8 +69,15 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
       },[conversationId])
 
       
-    return(
+      return(
         <div className="h-[585px] overflow-y-auto">
+          <div className="flex justify-center items-center">
+              <div className="mt-2 bg-gray-200 text-center rounded inline-block">
+                  <p className="px-2 py-1 text-gray-500 text-xs">
+                      These chats are end-to-end encrypted
+                  </p>
+              </div>
+          </div>
             {messages.map((message, i) => (
             <MessageBox 
                 isLast={i === messages.length - 1} 
