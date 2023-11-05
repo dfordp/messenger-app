@@ -7,7 +7,7 @@ import { FullMessageType } from "@/app/types";
 import MessageBox from "./MessageBox";
 import {find} from "lodash"
 import { pusherClient } from "@/app/libs/pusher";
-import { format , isToday } from 'date-fns';
+import { format , isThisYear } from 'date-fns';
 
 
 
@@ -25,7 +25,9 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
 
 
     const messagesByDate = messages.reduce((groups: { [key: string]: FullMessageType[] }, message) => {
-      const date = format(new Date(message.createdAt), 'yyyy-MM-dd');
+      const messageDate = new Date(message.createdAt);
+      const dateFormat = isThisYear(messageDate) ? 'dd MMMM' : 'dd MMMM yyyy';
+      const date = format(messageDate, dateFormat);
       if (!groups[date]) {
         groups[date] = [];
       }
@@ -83,7 +85,6 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
 
       
 
-      
       return(
         <div className="h-[585px] overflow-y-auto">
           {(!messages.length) && 
@@ -96,14 +97,6 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
           </div>}
           {Object.entries(messagesByDate).map(([date, messages]) => (
           <div key={date}>
-            {isToday(new Date(date)) && 
-            <div className="flex justify-center items-center">
-                <div className="mt-2 bg-gray-200 text-center rounded inline-block">
-                    <p className="px-2 py-1 text-gray-500 text-xs">
-                        Messages & Calls are end-to-end encrypted
-                    </p>
-                </div>
-            </div>}
             <div className="flex justify-center items-center">
               <div className="mt-2 bg-gray-200 text-center rounded inline-block">
                   <p className="px-2 py-1 text-gray-500 text-xs">
