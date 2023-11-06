@@ -87,14 +87,13 @@ const Body: React.FC<BodyProps> = ({ initialMessages = [] }) => {
 
       return(
         <div className="h-[585px] overflow-y-auto">
-          {(!messages.length) && 
           <div className="flex justify-center items-center">
             <div className="mt-2 bg-gray-200 text-center rounded inline-block">
               <p className="px-2 py-1 text-gray-500 text-xs">
                 Messages & Calls are end-to-end encrypted
               </p>
             </div>
-          </div>}
+          </div>
           {Object.entries(messagesByDate).map(([date, messages]) => (
           <div key={date}>
             <div className="flex justify-center items-center">
