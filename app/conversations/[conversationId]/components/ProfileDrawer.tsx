@@ -31,7 +31,8 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   const otherUser = useOtherUser(data);
   const {members} = useActiveList();
   const IsActive = members.indexOf(otherUser?.email!) !== -1
-  
+  let messages:any = [];
+  let userData = {...data,messages}
 
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), 'PP');
@@ -55,7 +56,7 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
       <CallModal
         isOpen={isCallModalOpen} 
         onClose={() => setIsCallModalOpen(false)}
-        userData={data}
+        userData={userData}
       />
       <ConfirmModal 
         isOpen={confirmOpen} 
