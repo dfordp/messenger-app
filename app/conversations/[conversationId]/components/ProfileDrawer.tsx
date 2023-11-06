@@ -2,7 +2,7 @@
 
 import { Fragment, useMemo, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
-import { IoClose, IoTrash } from 'react-icons/io5'
+import { IoClose, IoTrash , IoCall } from 'react-icons/io5'
 import { Conversation, User } from '@prisma/client';
 import { format } from 'date-fns';
 
@@ -12,7 +12,7 @@ import useActiveList from '@/app/hooks/useActiveList';
 import Avatar from '@/app/components/Avatar';
 import AvatarGroup from '@/app/components/AvatarGroup';
 import ConfirmModal from './ConfirmModal';
-
+import CallModal from './CallModal'
 interface ProfileDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -27,10 +27,12 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
   data,
 }) => {
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
   const otherUser = useOtherUser(data);
   const {members} = useActiveList();
   const IsActive = members.indexOf(otherUser?.email!) !== -1
   
+
   const joinedDate = useMemo(() => {
     return format(new Date(otherUser.createdAt), 'PP');
   }, [otherUser.createdAt]);
@@ -50,6 +52,11 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
 
   return (
     <>
+      <CallModal
+        isOpen={isCallModalOpen} 
+        onClose={() => setIsCallModalOpen(false)}
+        userData={data}
+      />
       <ConfirmModal 
         isOpen={confirmOpen} 
         onClose={() => setConfirmOpen(false)}
@@ -108,6 +115,14 @@ const ProfileDrawer: React.FC<ProfileDrawerProps> = ({
                             {statusText}
                           </div>
                           <div className="flex gap-10 my-8">
+                            <div onClick={() => setIsCallModalOpen(true)} className="flex flex-col gap-3 items-center cursor-pointer hover:opacity-75">
+                              <div className="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center">
+                                <IoCall size={20} />
+                              </div>
+                              <div className="text-sm font-light text-neutral-600">
+                                Call
+                              </div>
+                            </div>
                             <div onClick={() => setConfirmOpen(true)} className="flex flex-col gap-3 items-center cursor-pointer hover:opacity-75">
                               <div className="w-10 h-10 bg-neutral-100 rounded-full flex items-center justify-center">
                                 <IoTrash size={20} />
