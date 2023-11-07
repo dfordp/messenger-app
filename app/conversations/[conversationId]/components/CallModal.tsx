@@ -1,9 +1,11 @@
-import React, { useState , useEffect , useRef} from 'react';
+'use client';
+
+
+import React, { useState, useEffect, useRef } from 'react';
 import { Dialog } from '@headlessui/react';
 import { FiVideo, FiVideoOff, FiMic, FiMicOff, FiPhoneOff } from 'react-icons/fi';
 import Modal from '@/app/components/modals/Modal';
 import Button from '@/app/components/Button';
-import Image from 'next/image';
 import Pusher from 'pusher-js';
 
 interface Message {
@@ -28,23 +30,57 @@ interface Message {
     userData: UserData;
   }
 
+  interface Participant {
+    userId: string;
+  }
+  
+  
+
   const CallModal: React.FC<CallModalProps> = ({ isOpen, onClose , userData }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isVideoOff, setIsVideoOff] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [participants, setParticipants] = useState<Participant[]>([]);
     const { userIds, name: groupName } = userData;
 
-    // let pusherKey = process.env.PUSHER_APP_KEY;
-    // if (!pusherKey) {
-    // throw new Error('PUSHER_APP_KEY is not defined in the environment variables');
-    // }
 
-    // let pusher = new Pusher(pusherKey, {
-    // cluster: 'ap2'
-    // });
+    const pusherKey = process.env.NEXT_PUBLIC_PUSHER_APP_KEY;
+    if (!pusherKey) {
+      throw new Error('PUSHER_APP_KEY is not defined in the environment variables');
+    }
 
+    let pusher = new Pusher(pusherKey, {
+    cluster: 'ap2'
+    });
+
+    const channelName = `group-${groupName}`;
+    const channel = pusher.subscribe(channelName);
+
+
+    useEffect(() => {
+      const pusher = new Pusher(pusherKey, { cluster: 'ap2' });
+      const channelName = `group-${groupName}`;
+      const channel = pusher.subscribe(channelName);
+  
+      channel.bind('user-joined', (data: any) => {
+        const { userId } = data;
+        setParticipants(prevParticipants => [...prevParticipants, userId]);
+      });
+  
+      channel.bind('disconnected', () => {
+        if (videoRef.current && videoRef.current.srcObject) {
+          let stream = videoRef.current.srcObject as MediaStream;
+          let tracks = stream.getTracks();
+          tracks.forEach(track => track.stop());
+          videoRef.current.srcObject = null;
+        }
+      });
+      return () => {
+        channel.unsubscribe();
+        pusher.disconnect();
+      };
+    }, [groupName]);
     
-
     useEffect(() => {
       if (isOpen) {
         navigator.mediaDevices.getUserMedia({ audio: true, video: !isVideoOff })
@@ -57,8 +93,18 @@ interface Message {
             console.log('Error: ', err);
           });
       }
+
+      return () => {
+        if (videoRef.current && videoRef.current.srcObject) {
+          let stream = videoRef.current.srcObject as MediaStream;
+          let tracks = stream.getTracks();
+          tracks.forEach(track => track.stop());
+          videoRef.current.srcObject = null;
+        }
+      };
     }, [isOpen, isVideoOff]);
-  
+
+      
     return (
       <Modal isOpen={isOpen} onClose={onClose}>
         <div className="mx-auto">
