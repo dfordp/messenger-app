@@ -53,10 +53,6 @@ interface Message {
     cluster: 'ap2'
     });
 
-    const channelName = `group-${groupName}`;
-    const channel = pusher.subscribe(channelName);
-
-
     useEffect(() => {
       const pusher = new Pusher(pusherKey, { cluster: 'ap2' });
       const channelName = `group-${groupName}`;
